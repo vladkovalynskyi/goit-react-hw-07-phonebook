@@ -1,55 +1,46 @@
 // App.js
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts, selectIsLoading, selectError } from 'redux/selectors';
+import { fetchContacts } from 'redux/operations';
+import Section from './Section/Section';
 import ContactForm from './ContactForm/ContactForm';
 import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList';
 import './App.css';
 
-function App() {
-  const [contacts, setContacts] = useState(() => {
-    const storedContacts = localStorage.getItem('contacts');
-    return storedContacts ? JSON.parse(storedContacts) : [];
-  });
-
-  const [filter, setFilter] = useState('');
+export function App() {
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
 
   useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
-  const handleFilterChange = e => {
-    setFilter(e.target.value);
-  };
-
-  const handleAddContact = newContact => {
-    setContacts(prevContacts => [newContact, ...prevContacts]);
-  };
-
-  const searchContacts = () => {
-    const normalizedFilter = filter.toLowerCase().trim();
-    return contacts.filter(contact => {
-      return `${contact.name}${contact.number}`
-        .toLowerCase()
-        .includes(normalizedFilter);
-    });
-  };
-
-  const handleDeleteContact = id => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== id)
-    );
-  };
+  const contactsFromState = useSelector(selectContacts);
 
   return (
-    <div className="app_container">
-      <h1>Phonebook</h1>
-      <ContactForm addContact={handleAddContact} />
-
-      <h2>Contacts</h2>
-      <Filter value={filter} onChange={handleFilterChange} />
-      <ContactList contacts={searchContacts()} deleteContact={handleDeleteContact} />
+    <div className="main-wrapper">
+      <Section className="addContactSection" title="Phonebook">
+        <ContactForm />
+      </Section>
+      {isLoading && !error && (
+        <p style={{ textAlign: 'center', color: 'orange' }}>
+          Request in progress...
+        </p>
+      )}
+      {error && (
+        <p style={{ textAlign: 'center', color: 'red' }}>
+          Ooops! Something went wrong, please try again...
+        </p>
+      )}
+      {contactsFromState.length !== 0 && (
+        <Section className="contactListSection" title="Contacts">
+          <Filter />
+          <ContactList />
+        </Section>
+      )}
     </div>
   );
 }
-
-export default App;
