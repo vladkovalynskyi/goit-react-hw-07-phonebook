@@ -1,0 +1,45 @@
+/* ContactForm.module.css */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: 0 auto;
+}
+  
+.label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 18px;
+}
+  
+.input {
+    padding: 8px;
+    margin-bottom: 16px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 15px;
+}
+  
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 4px;
+}
+  
+.submitBtn {
+    padding: 10px 16px;
+    background-color: #3f51b5;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+  
+.submitBtn:hover {
+    background-color: #303f9f;
+}
