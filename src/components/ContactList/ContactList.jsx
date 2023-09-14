@@ -1,18 +1,31 @@
-// ContactList.js
-import React from 'react';
+import css from './ContactList.module.css';
 import { useSelector } from 'react-redux';
-import { getFilteredContacts } from 'redux/selectors';
+import { selectContacts, selectFilter } from 'redux/selectors';
 import { ContactCard } from '../ContactCard/ContactCard';
-import css from './ContactList.module.css'
 
 export default function ContactsList() {
-  const filteredContacts = useSelector(getFilteredContacts);
+  const contactsFromState = useSelector(selectContacts);
+  const filterValue = useSelector(selectFilter);
+
+  let filteredContacts = [...contactsFromState];
+
+  const getFilteredContacts = filterValue => {
+    const normalizedValue = filterValue.trim().toLowerCase();
+
+    return (filteredContacts = contactsFromState
+      .filter(contact => contact.name.toLowerCase().includes(normalizedValue))
+      .sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ));
+  };
+
+  getFilteredContacts(filterValue);
 
   return (
     <ul className={css.list}>
-      {filteredContacts.map(({ id, name, number }) => (
-        <ContactCard key={id} id={id} name={name} number={number} />
-      ))}
+      {filteredContacts.map(({ id, name, number }) => {
+        return <ContactCard key={id} id={id} name={name} number={number} />;
+      })}
     </ul>
   );
 }

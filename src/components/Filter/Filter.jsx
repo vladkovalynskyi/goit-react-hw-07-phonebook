@@ -1,16 +1,16 @@
-// Filter.js
+import css from './Filter.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilter } from 'redux/filterSlice';
-import { getFilter } from 'redux/selectors';
+import { selectFilter } from 'redux/selectors';
 import { LuSearch } from 'react-icons/lu';
-import css from './Filter.module.css'
 
 export default function Filter() {
   const dispatch = useDispatch();
-  const filterValue = useSelector(getFilter);
+  const filterValue = useSelector(selectFilter);
 
   const handleChange = e => {
     const { value } = e.currentTarget;
+
     dispatch(setFilter(value));
   };
 
@@ -19,16 +19,14 @@ export default function Filter() {
       <i className={css.searchIcon} aria-hidden="true">
         <LuSearch />
       </i>
-      <label className={css.label} htmlFor="search">
-        <input
-          className={css.input}
-          id="search"
-          type="search"
-          placeholder="Search by name"
-          value={filterValue}
-          onChange={handleChange}
-        />
-      </label>
+      <input
+        className={css.input}
+        id="search"
+        type="search"
+        placeholder="Search by name"
+        value={filterValue}
+        onChange={handleChange}
+      />
     </div>
   );
 }
