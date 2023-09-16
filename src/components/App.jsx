@@ -1,46 +1,78 @@
-// App.js
-import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts, selectIsLoading, selectError } from 'redux/selectors';
-import { fetchContacts } from 'redux/operations';
-import Section from './Section/Section';
-import ContactForm from './ContactForm/ContactForm';
-import Filter from './Filter/Filter';
-import ContactList from './ContactList/ContactList';
-import './App.css';
+import { lazy, useEffect } from 'react';
+import { refreshUser } from 'redux/auth/operations';
+import { PrivateRoute } from './PrivateRoute';
+import { PublicRoute } from './PublicRoute';
+import { selectIsRefreshingUser } from 'redux/auth/selectors';
+import { SharedLayout } from 'components/SharedLayout';
 
-export function App() {
+const HomePage = lazy(() => import('pages/HomePage'));
+const SignUpPage = lazy(() => import('pages/SignUpPage'));
+const LoginPage = lazy(() => import('pages/LoginPage'));
+const ContactsPage = lazy(() => import('pages/ContactsPage'));
+const NotFoundPage = lazy(() => import('pages/NotFoundPage'));
+
+function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
+  const isRefreshingUser = useSelector(selectIsRefreshingUser);
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
 
-  const contactsFromState = useSelector(selectContacts);
-
   return (
-    <div className="main-wrapper">
-      <Section className="addContactSection" title="Phonebook">
-        <ContactForm />
-      </Section>
-      {isLoading && !error && (
-        <p style={{ textAlign: 'center', color: 'orange' }}>
-          Request in progress...
-        </p>
+    <>
+      <Toaster position="bottom-right" />
+      {!isRefreshingUser && (
+        <Routes>
+          <Route path="/" element={<SharedLayout />}>
+            <Route
+              index
+              element={
+                <PublicRoute redirectTo="/contacts" restricted>
+                  <HomePage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <PublicRoute redirectTo="/contacts" restricted>
+                  <SignUpPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute redirectTo="/contacts" restricted>
+                  <LoginPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute redirectTo="/login"></PrivateRoute>
+              }
+            >
+            </Route>
+            <Route
+              path="/contacts"
+              element={
+                <PrivateRoute redirectTo="/login">
+                  <ContactsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
       )}
-      {error && (
-        <p style={{ textAlign: 'center', color: 'red' }}>
-          Ooops! Something went wrong, please try again...
-        </p>
-      )}
-      {contactsFromState.length !== 0 && (
-        <Section className="contactListSection" title="Contacts">
-          <Filter />
-          <ContactList />
-        </Section>
-      )}
-    </div>
+    </>
   );
 }
+
+export default App;

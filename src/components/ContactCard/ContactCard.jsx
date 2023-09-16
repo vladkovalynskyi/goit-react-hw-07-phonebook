@@ -1,12 +1,10 @@
-import React from 'react';
+import css from './ContactCard.module.css';
+import { deleteContact } from 'redux/contacts/operations';
 import { useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/operations';
 import { FaPhoneAlt } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
-import css from './ContactCard.module.css';
-
-function ContactCard({ id, name, number }) {
+export function ContactCard({ id, name, number }) {
   const dispatch = useDispatch();
 
   const handleDelete = () => dispatch(deleteContact(id));
@@ -39,5 +37,3 @@ ContactCard.propTypes = {
   name: PropTypes.string.isRequired,
   number: PropTypes.string.isRequired,
 };
-
-export default ContactCard;

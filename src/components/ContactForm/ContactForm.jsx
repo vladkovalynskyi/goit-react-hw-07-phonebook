@@ -1,9 +1,10 @@
 import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/operations';
-import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/contacts/operations';
+import { selectContacts } from 'redux/contacts/selectors';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
+import toast from 'react-hot-toast';
 
 const initialValues = {
   name: '',
@@ -27,7 +28,7 @@ const schema = yup.object({
     .required(`Phone number field can't be empty`),
 });
 
-export default function AddContactForm() {
+export function AddContactForm() {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
 
@@ -47,7 +48,7 @@ export default function AddContactForm() {
     const isAdded = isContactAlreadyAdded(name);
 
     if (isAdded !== -1) {
-      alert(`${name} is already in contacts`);
+      toast.error('This contact is already in your contacts list.');
       resetForm();
       return;
     }
